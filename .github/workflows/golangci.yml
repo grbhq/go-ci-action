@@ -4,16 +4,6 @@ name: build-go-binary
 on:
   release:
     types: [created] # 表示在创建新的 Release 时触发
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-      tag:
-        description: 'release标签'
-        required: true
-        default: 'test'
 
 jobs:
   build-go-binary:
@@ -35,4 +25,3 @@ jobs:
           binary_name: "QLTools-${{ matrix.goos }}-${{ matrix.goarch }}" # 可以指定二进制文件的名称
           extra_files: README.MD ./config/config.yaml # 需要包含的额外文件
           compress_assets: false # 上传前不压缩资源
-          #release_tag: ${{ github.event.inputs.tag || github.event.release.tag_name }}
