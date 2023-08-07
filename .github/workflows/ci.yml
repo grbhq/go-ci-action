@@ -48,7 +48,7 @@ jobs:
           mkdir dist-$WORK_DIR && cd dist-$WORK_DIR
           docker pull techknowlogick/xgo:latest
           go install src.techknowlogick.com/xgo@latest
-          xgo -ldflags='-linkmode external -s -w -extldflags "-static"' -out $WORK_DIR --targets=linux/*,windows/386,windows/amd64,darwin/amd64,darwin/arm64 github.com/${{ github.repository }}
+          xgo -out $WORK_DIR --targets=linux/*,windows/386,windows/amd64,darwin/amd64,darwin/arm64 github.com/${{ github.repository }}
           ls -al ./dist-$WORK_DIR
 
       - name: Upload artifact
