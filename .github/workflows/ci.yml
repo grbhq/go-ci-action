@@ -47,6 +47,7 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
         run: |
+          docker pull techknowlogick/xgo:latest
           go install src.techknowlogick.com/xgo@latest
           xgo -out QLTools --targets="$GOOS/$GOARCH" .
           ls -al
