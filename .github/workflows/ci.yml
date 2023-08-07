@@ -15,9 +15,7 @@ on:
         default: 'test'
 
 env:
-  BINARY_PREFIX: "QLTools"
-  BINARY_SUFFIX: ""
-  COMMIT_ID: "${{ github.sha }}"
+  WORK_DIR: "QLTools"
 
 jobs:
   build:
@@ -47,14 +45,13 @@ jobs:
         #   GOOS: ${{ matrix.goos }}
         #   GOARCH: ${{ matrix.goarch }}
         run: |
+          mkdir dist-$WORK_DIR && cd dist-$WORK_DIR
           docker pull techknowlogick/xgo:latest
           go install src.techknowlogick.com/xgo@latest
-          xgo -out QLTools --targets=--targets=linux/*,windows/386,windows/amd64,darwin/amd64,darwin/arm64 .
-          ls -al
+          xgo -ldflags='-linkmode external -s -w -extldflags "-static"' -out $WORK_DIR --targets=linux/*,windows/386,windows/amd64,darwin/amd64,darwin/arm64 github.com/${{ github.repository }}
+          ls -al ./dist-$WORK_DIR
 
-      # - name: Upload artifact
-      #   uses: actions/upload-artifact@v3
-      #   if: ${{ !github.head_ref }}
-      #   with:
-      #     name: ${{ matrix.goos }}_${{ matrix.goarch }}
-      #     path: output/
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: dist-$WORK_DIR/
