@@ -54,4 +54,4 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          path: ./dist-$WORK_DIR
+          path: dist-${{ env.WORK_DIR }}/
