@@ -48,10 +48,11 @@ jobs:
           mkdir dist-$WORK_DIR && cd dist-$WORK_DIR
           docker pull techknowlogick/xgo:latest
           go install src.techknowlogick.com/xgo@latest
-          xgo -out $WORK_DIR --targets=windows/386,windows/amd64,darwin/amd64,darwin/arm64 github.com/${{ github.repository }}
+          xgo -ldflags '-s -w' -out $WORK_DIR --targets=linux/*,windows/386,windows/amd64,darwin/amd64,darwin/arm64 github.com/${{ github.repository }}
           cd .. && ls -al ./dist-$WORK_DIR
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
+          name: artifact1
           path: dist-${{ env.WORK_DIR }}/
