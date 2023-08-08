@@ -53,13 +53,14 @@ checksum:
 archives:
   - id: binary
     builds:
-      - nowin
-    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}-{{ .Arm }}"
+      - win
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}-{{ .Arm }}{{ end }}"
     format_overrides:
       - format: binary
-  - id: nowin
+  - id: nowins
     builds:
       - win
-    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+      - nowin
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ end }}"
     format_overrides:
       - format: binary
