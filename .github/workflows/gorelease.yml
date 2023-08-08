@@ -1,7 +1,18 @@
 name: goreleaser
 
 on:
+  release:
+    types: [created] # 表示在创建新的 Release 时触发
   workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tag:
+        description: 'release标签'
+        required: true
+        default: 'test'
 
 jobs:
   goreleaser:
