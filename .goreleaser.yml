@@ -54,13 +54,7 @@ archives:
   - id: binary
     builds:
       - win
-    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}-{{ .Arm }}{{ end }}"
-    format_overrides:
-      - format: binary
-  - id: nowins
-    builds:
-      - win
       - nowin
-    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ end }}"
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}-{{ .Arm }}{{ end }}{{ if not .Arm }}{{ end }}"
     format_overrides:
       - format: binary
