@@ -3,7 +3,6 @@ before:
     - go mod tidy
 release:
   draft: false
-  discussion_category_name: General
 report_sizes: true
 builds:
   - id: nowin
