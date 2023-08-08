@@ -1,8 +1,8 @@
 name: CI
 
 on:
-  release:
-    types: [created] # 表示在创建新的 Release 时触发
+  #release:
+    #types: [created] # 表示在创建新的 Release 时触发
   workflow_dispatch:
     inputs:
       logLevel:
