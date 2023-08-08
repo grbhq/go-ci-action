@@ -55,6 +55,6 @@ archives:
     builds:
       - win
       - nowin
-    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}-{{ .Arm }}{{ end }}{{ if not .Arm }}{{ end }}"
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}-{{ .Arm }}{{ end }}{{ if not .Arm }}{{ end }}"
     format_overrides:
       - format: binary
