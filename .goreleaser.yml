@@ -2,7 +2,7 @@ before:
   hooks:
     - go mod tidy
 release:
-  draft: true
+  draft: false
   discussion_category_name: General
 report_sizes: true
 builds:
@@ -42,14 +42,14 @@ builds:
       - amd64
       - arm64
     mod_timestamp: "{{ .CommitTimestamp }}"
-    flags:
-      - -trimpath
     ldflags:
       - -s -w
 
 checksum:
   name_template: "{{ .ProjectName }}_sha256_checksums.txt"
   algorithm: sha256
+changelog:
+  skip: true
 
 archives:
   - id: binary
