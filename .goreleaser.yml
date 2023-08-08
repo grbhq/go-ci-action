@@ -56,10 +56,10 @@ archives:
       - nowin
     name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}-{{ .Arm }}{{ end }}"
     format_overrides:
-        format: binary
+      - format: binary
   - id: nowin
     builds:
       - win
     name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ end }}"
     format_overrides:
-        format: binary
+      - format: binary
