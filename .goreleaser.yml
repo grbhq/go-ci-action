@@ -4,6 +4,7 @@ before:
 release:
   draft: true
   discussion_category_name: General
+report_sizes: true
 builds:
   - id: nowin
     env:
@@ -55,6 +56,6 @@ archives:
     builds:
       - win
       - nowin
-    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}-{{ .Arm }}{{ end }}{{ if not .Arm }}{{ end }}"
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}-{{ .Arm }}{{ end }}"
     format_overrides:
       - format: binary
