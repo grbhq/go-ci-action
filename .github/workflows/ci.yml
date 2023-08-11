@@ -9,6 +9,10 @@ on:
         description: 'Log level'
         required: true
         default: 'warning'
+      xgoversion:
+        description: '自定义docker版xgo镜像地址和标签[保持默认值即可，谨慎填写]，如：ghcr.io/grbhq/xgo:go-1.20.0'
+        required: true
+        default: 'techknowlogick/xgo:latest'
       forcedtag:
         description: 'tag标签重复时是否强制覆盖，勾选后自动覆盖，默认关闭'
         type: boolean
@@ -26,6 +30,7 @@ jobs:
   build:
     name: Build binary CI
     runs-on: ubuntu-latest
+    permissions: write-all
     
     steps:
       - uses: actions/checkout@v3
@@ -35,11 +40,11 @@ jobs:
           cache: true
           go-version: '1.20'
       
-      # 利用xgo交叉编译二进制文件
+      # 利用xgo交叉编译二进制文件 # 仓库地址：https://github.com/techknowlogick/xgo
       - name: Build go binary file
         run: |
           mkdir dist-$WORK_DIR && cd dist-$WORK_DIR
-          docker pull ghcr.io/grbhq/xgo:go-1.20.0
+          docker pull ${{ github.event.inputs.xgoversion }}
           go install src.techknowlogick.com/xgo@latest
           xgo -ldflags '-s -w' -out $WORK_DIR --targets=linux/*,windows/386,windows/amd64,darwin/amd64,darwin/arm64 github.com/${{ github.repository }}
           cd .. && ls -al ./dist-$WORK_DIR
@@ -56,10 +61,10 @@ jobs:
         id: checktag
         run: |
           if echo "${{ github.event.inputs.tag }}" | grep -P "^(?!v0+(\.0+)*$)v?\d+(\.\d+)+$"; then
-            echo "The version is formatted correctly"
+            echo "The version ${{ github.event.inputs.tag }} is formatted correctly"
             echo "runnable=true" >> $GITHUB_OUTPUT
           else
-            echo "The version is malformed"
+            echo "The version ${{ github.event.inputs.tag }} is malformed"
             exit 0
           fi
       
