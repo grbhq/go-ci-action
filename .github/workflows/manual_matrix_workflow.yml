@@ -1,0 +1,26 @@
+name: Matrix Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      matrix_values:
+        description: 'Matrix Values (comma-separated)'
+        required: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        values: ${{ split(github.event.inputs.matrix_values, ',') }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Print Matrix Value
+      run: |
+        for value in ${{ matrix.values }}; do
+          echo "Matrix Value: $value"
+        done

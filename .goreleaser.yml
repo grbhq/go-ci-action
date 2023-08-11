@@ -1,0 +1,60 @@
+before:
+  hooks:
+    - go mod tidy
+release:
+  draft: false
+report_sizes: true
+builds:
+  - id: nowin
+    env:
+      - CGO_ENABLED=1
+      - GO111MODULE=on
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - '386'
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - '6'
+      - '7'
+    ignore:
+      - goos: darwin
+        goarch: arm
+      - goos: darwin
+        goarch: '386'
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+  - id: win
+    env:
+      - CGO_ENABLED=1
+      - GO111MODULE=on
+    goos:
+      - windows
+    goarch:
+      - '386'
+      - amd64
+      - arm64
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - -s -w
+
+checksum:
+  name_template: "{{ .ProjectName }}_sha256_checksums.txt"
+  algorithm: sha256
+changelog:
+  skip: true
+
+archives:
+  - id: binary
+    builds:
+      - win
+      - nowin
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}-{{ .Arm }}{{ end }}{{ if not .Arm }}{{ end }}"
+    format_overrides:
+      - format: binary
