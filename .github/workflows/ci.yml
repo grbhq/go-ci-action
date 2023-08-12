@@ -13,6 +13,11 @@ on:
         description: '自定义docker版xgo镜像地址和标签[保持默认值即可，谨慎填写]，如：ghcr.io/grbhq/xgo:go-1.20.0'
         required: true
         default: 'techknowlogick/xgo:latest'
+      pushrelease:
+        description: '是否发布release，不勾选不发布，默认发布'
+        type: boolean
+        required: true
+        default: 'true'
       forcedtag:
         description: 'tag标签重复时是否强制覆盖，勾选后自动覆盖，默认关闭'
         type: boolean
@@ -58,6 +63,7 @@ jobs:
       
       # 检测输入的tag版本格式[如：v1.2.0；0.1；0.5.6；2.20.100]均可行
       - name: check tag_version
+        if: ${{ github.event.inputs.pushrelease == 'true' }}
         id: checktag
         run: |
           if echo "${{ github.event.inputs.tag }}" | grep -P "^(?!v0+(\.0+)*$)v?\d+(\.\d+)+$"; then
@@ -70,7 +76,7 @@ jobs:
       
       # 强制推送已存在的tag
       - name: forced tag
-        if: ${{ github.event.inputs.forcedtag == 'true' && steps.checktag.outputs.runnable == 'true' }}
+        if: ${{ github.event.inputs.pushrelease == 'true' && github.event.inputs.forcedtag == 'true' && steps.checktag.outputs.runnable == 'true' }}
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -79,7 +85,7 @@ jobs:
       
       # 上传二进制文件到relea
       - name: Upload binaries to release
-        if: ${{ steps.checktag.outputs.runnable == 'true' }}
+        if: ${{ github.event.inputs.pushrelease == 'true' && steps.checktag.outputs.runnable == 'true' }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
