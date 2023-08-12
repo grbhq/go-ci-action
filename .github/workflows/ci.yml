@@ -13,6 +13,11 @@ on:
         description: '自定义docker版xgo镜像地址和标签[保持默认值即可，谨慎填写]，如：ghcr.io/grbhq/xgo:go-1.20.0'
         required: true
         default: 'techknowlogick/xgo:latest'
+      pushartifact:
+        description: '是否拆分上传二进制文件到artifact，不勾选不拆分上传，默认不拆分'
+        type: boolean
+        required: true
+        default: 'false'
       pushrelease:
         description: '是否发布release，不勾选不发布，默认发布'
         type: boolean
@@ -35,6 +40,9 @@ jobs:
   build:
     name: Build binary CI
     runs-on: ubuntu-latest
+    outputs: 
+      file_lists: ${{ steps.filenames.outputs.file_lists }}
+    
     permissions: write-all
     
     steps:
@@ -83,7 +91,7 @@ jobs:
           git tag -f ${{ github.event.inputs.tag }}
           git push origin -f ${{ github.event.inputs.tag }}
       
-      # 上传二进制文件到relea
+      # 上传二进制文件到release
       - name: Upload binaries to release
         if: ${{ github.event.inputs.pushrelease == 'true' && steps.checktag.outputs.runnable == 'true' }}
         uses: svenstaro/upload-release-action@v2
@@ -96,5 +104,43 @@ jobs:
           prerelease: false
           overwrite: true
           body: "- This is my release text"
+
+      # 获取二进制文件列表
+      - name: binary file lists
+        id: filenames
+        run: |
+          folder_path="dist-$WORK_DIR"
+          file_names=$(find "$folder_path" -type f -exec basename {} \; | sed 's/.*/"&"/' | paste -sd, - | sed -e '1s/^/\[/' -e '$s/$/\]/')
+          echo "file_lists=$file_names" >> $GITHUB_OUTPUT
+          
+  artifact:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.pushartifact == 'true' }}
+    permissions: write-all
+    strategy:
+      fail-fast: true
+      max-parallel: 6
+      matrix:
+        lists: ${{ fromJson(needs.build.outputs.file_lists) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      # 下载artifact中的文件到本地
+      - name: download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.WORK_DIR }}-${{ github.run_number }}
+          path: dist-${{ env.WORK_DIR }}/
+
+      # 单个依次上传二进制文件到artifact，默认90天有效期
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.lists }}
+          path: dist-${{ env.WORK_DIR }}/${{ matrix.lists }}
+
 
       
